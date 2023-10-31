@@ -6,15 +6,11 @@ public class Invoice {
     private String customer;
     private List<Performance> performances;
 
-    // Constructors, getters, and setters
-
-    // Constructor
     public Invoice(String customer, List<Performance> performances) {
         this.customer = customer;
         this.performances = performances;
     }
 
-    // Getters and setters
     public String getCustomer() {
         return customer;
     }

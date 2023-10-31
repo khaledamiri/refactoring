@@ -4,6 +4,11 @@ public class Performance {
     private String playID;
     private int audience;
 
+    public Performance() {
+        // jackson serialization need
+
+    }
+
     public Performance(String playID, int audience) {
         this.playID = playID;
         this.audience = audience;

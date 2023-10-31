@@ -6,6 +6,10 @@ public class Invoice {
     private String customer;
     private List<Performance> performances;
 
+    public Invoice() {
+        // jackson serialization need
+    }
+
     public Invoice(String customer, List<Performance> performances) {
         this.customer = customer;
         this.performances = performances;

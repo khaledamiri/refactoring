@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class StatementGenerator {
-    public static String generateStatement(Invoice invoice, Map<String, Play> plays) {
+    public String generateStatement(Invoice invoice, Map<String, Play> plays) {
         double totalAmount = 0;
         int volumeCredits = 0;
         String result = "Statement for " + invoice.getCustomer() + "\n";

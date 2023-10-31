@@ -4,6 +4,11 @@ public class Play {
     private String name;
     private String type;
 
+    public Play() {
+        // jackson serialization need
+
+    }
+
     public Play(String name, String type) {
         this.name = name;
         this.type = type;

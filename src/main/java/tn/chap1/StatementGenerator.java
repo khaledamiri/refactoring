@@ -7,7 +7,7 @@ import java.util.Map;
 public class StatementGenerator {
     public String statement(Invoice invoice, Map<String, Play> plays) {
         double totalAmount = 0;
-        int volumeCredits = 0;
+
         String result = "Statement for " + invoice.getCustomer() + "\n";
 
         for (Performance perf : invoice.getPerformances()) {
@@ -15,13 +15,19 @@ public class StatementGenerator {
             result += " " + playFor(plays, perf).getName() + ": " + usd(amountFor(perf, playFor(plays, perf))) + " (" + perf.getAudience() + " seats)\n";
             totalAmount += amountFor(perf, playFor(plays, perf));
         }
-        for (Performance perf : invoice.getPerformances()) {
-            volumeCredits += volumeCreditsFor(plays, perf);
-        }
+        int volumeCredits = totalVolumeCredits(invoice, plays);
 
         result += "Amount owed is " + usd(totalAmount) + "\n";
         result += "You earned " + volumeCredits + " credits\n";
         return result;
+    }
+
+    private static int totalVolumeCredits(Invoice invoice, Map<String, Play> plays) {
+        int volumeCredits = 0;
+        for (Performance perf : invoice.getPerformances()) {
+            volumeCredits += volumeCreditsFor(plays, perf);
+        }
+        return volumeCredits;
     }
 
     private static String usd(double aNumber) {

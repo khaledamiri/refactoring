@@ -15,10 +15,9 @@ public class StatementGenerator {
             result += " " + playFor(plays, perf).getName() + ": " + usd(amountFor(perf, playFor(plays, perf))) + " (" + perf.getAudience() + " seats)\n";
             totalAmount += amountFor(perf, playFor(plays, perf));
         }
-        int volumeCredits = totalVolumeCredits(invoice, plays);
 
         result += "Amount owed is " + usd(totalAmount) + "\n";
-        result += "You earned " + volumeCredits + " credits\n";
+        result += "You earned " + totalVolumeCredits(invoice, plays) + " credits\n";
         return result;
     }
 

@@ -12,27 +12,30 @@ public class StatementGenerator {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance perf : invoice.getPerformances()) {
-            Play play = plays.get(perf.getPlayID());
             double thisAmount = 0;
 
-            thisAmount = amountFor(perf, play);
+            thisAmount = amountFor(perf, playFor(plays, perf));
 
             // add volume credits
             volumeCredits += Math.max(perf.getAudience() - 30, 0);
 
             // add extra credit for every ten comedy attendees
-            if ("comedy".equals(play.getType())) {
+            if ("comedy".equals(playFor(plays, perf).getType())) {
                 volumeCredits += Math.floorDiv(perf.getAudience(), 5);
             }
 
             // print line for this order
-            result += " " + play.getName() + ": " + format.format(thisAmount / 100) + " (" + perf.getAudience() + " seats)\n";
+            result += " " + playFor(plays, perf).getName() + ": " + format.format(thisAmount / 100) + " (" + perf.getAudience() + " seats)\n";
             totalAmount += thisAmount;
         }
 
         result += "Amount owed is " + format.format(totalAmount / 100) + "\n";
         result += "You earned " + volumeCredits + " credits\n";
         return result;
+    }
+
+    private static Play playFor(Map<String, Play> plays, Performance perf) {
+        return plays.get(perf.getPlayID());
     }
 
     private static double amountFor(Performance aPerformance, Play play) {

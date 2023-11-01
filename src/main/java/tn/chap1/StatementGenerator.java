@@ -9,7 +9,6 @@ public class StatementGenerator {
         double totalAmount = 0;
         int volumeCredits = 0;
         String result = "Statement for " + invoice.getCustomer() + "\n";
-        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance perf : invoice.getPerformances()) {
             double thisAmount = 0;
@@ -19,13 +18,22 @@ public class StatementGenerator {
             volumeCredits += volumeCreditsFor(plays, perf);
 
             // print line for this order
-            result += " " + playFor(plays, perf).getName() + ": " + format.format(thisAmount / 100) + " (" + perf.getAudience() + " seats)\n";
+            result += " " + playFor(plays, perf).getName() + ": " + usd(thisAmount) + " (" + perf.getAudience() + " seats)\n";
             totalAmount += thisAmount;
         }
 
-        result += "Amount owed is " + format.format(totalAmount / 100) + "\n";
+        result += "Amount owed is " + usd(totalAmount) + "\n";
         result += "You earned " + volumeCredits + " credits\n";
         return result;
+    }
+
+    private static String usd(double aNumber) {
+        return format().format(aNumber / 100);
+    }
+
+    private static NumberFormat format() {
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+        return format;
     }
 
     private static int volumeCreditsFor(Map<String, Play> plays, Performance perf) {

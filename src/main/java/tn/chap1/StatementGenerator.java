@@ -16,13 +16,7 @@ public class StatementGenerator {
 
             thisAmount = amountFor(perf, playFor(plays, perf));
 
-            // add volume credits
-            volumeCredits += Math.max(perf.getAudience() - 30, 0);
-
-            // add extra credit for every ten comedy attendees
-            if ("comedy".equals(playFor(plays, perf).getType())) {
-                volumeCredits += Math.floorDiv(perf.getAudience(), 5);
-            }
+            volumeCredits += volumeCreditsFor(plays, perf);
 
             // print line for this order
             result += " " + playFor(plays, perf).getName() + ": " + format.format(thisAmount / 100) + " (" + perf.getAudience() + " seats)\n";
@@ -31,6 +25,18 @@ public class StatementGenerator {
 
         result += "Amount owed is " + format.format(totalAmount / 100) + "\n";
         result += "You earned " + volumeCredits + " credits\n";
+        return result;
+    }
+
+    private static int volumeCreditsFor(Map<String, Play> plays, Performance perf) {
+        int result = 0;
+        // add volume credits
+        result += Math.max(perf.getAudience() - 30, 0);
+
+        // add extra credit for every ten comedy attendees
+        if ("comedy".equals(playFor(plays, perf).getType())) {
+            result += Math.floorDiv(perf.getAudience(), 5);
+        }
         return result;
     }
 

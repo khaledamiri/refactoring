@@ -79,7 +79,7 @@ public class StatementGeneratorTest {
                         " As You Like It: $580.00 (35 seats)\n" +
                         " Othello: $500.00 (40 seats)\n" +
                         "Amount owed is $1,730.00\n" +
-                        "You earned 47 credits\n", statementGenerator.generateStatement(invoices.get(0), playMap),
+                        "You earned 47 credits\n", statementGenerator.statement(invoices.get(0), playMap),
                 "Generate Statement should work");
 
     }
@@ -93,7 +93,7 @@ public class StatementGeneratorTest {
         List<Invoice> invoices = objectMapper.readValue(innvoicesWithWrongPlay, new TypeReference<>() {
         });
 
-        Throwable exception = assertThrows(IllegalArgumentException.class, () -> statementGenerator.generateStatement(invoices.get(0), playMap));
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> statementGenerator.statement(invoices.get(0), playMap));
         assertEquals("Unknown type: police", exception.getMessage());
 
     }

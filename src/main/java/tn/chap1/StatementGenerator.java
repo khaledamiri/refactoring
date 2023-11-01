@@ -5,21 +5,18 @@ import java.util.Locale;
 import java.util.Map;
 
 public class StatementGenerator {
-    public String generateStatement(Invoice invoice, Map<String, Play> plays) {
+    public String statement(Invoice invoice, Map<String, Play> plays) {
         double totalAmount = 0;
         int volumeCredits = 0;
         String result = "Statement for " + invoice.getCustomer() + "\n";
 
         for (Performance perf : invoice.getPerformances()) {
-            double thisAmount = 0;
-
-            thisAmount = amountFor(perf, playFor(plays, perf));
-
-            volumeCredits += volumeCreditsFor(plays, perf);
-
             // print line for this order
-            result += " " + playFor(plays, perf).getName() + ": " + usd(thisAmount) + " (" + perf.getAudience() + " seats)\n";
-            totalAmount += thisAmount;
+            result += " " + playFor(plays, perf).getName() + ": " + usd(amountFor(perf, playFor(plays, perf))) + " (" + perf.getAudience() + " seats)\n";
+            totalAmount += amountFor(perf, playFor(plays, perf));
+        }
+        for (Performance perf : invoice.getPerformances()) {
+            volumeCredits += volumeCreditsFor(plays, perf);
         }
 
         result += "Amount owed is " + usd(totalAmount) + "\n";

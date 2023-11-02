@@ -24,7 +24,7 @@ public class Statement {
         Performance result = new Performance();
         result.setPlay(calculator.getPlay());
         result.setAudience(aPerformance.getAudience());
-        result.setAmount(amountFor(result));
+        result.setAmount(calculator.amountFor());
         result.setVolumeCredits(volumeCreditsFor(result));
         return result;
     }
@@ -64,27 +64,5 @@ public class Statement {
 
     private static Play playFor(Map<String, Play> plays, Performance perf) {
         return plays.get(perf.getPlayID());
-    }
-
-    private static double amountFor(Performance aPerformance) {
-        double result;
-        switch (aPerformance.getPlay().getType()) {
-            case "tragedy":
-                result = 40000;
-                if (aPerformance.getAudience() > 30) {
-                    result += 1000 * (aPerformance.getAudience() - 30);
-                }
-                break;
-            case "comedy":
-                result = 30000;
-                if (aPerformance.getAudience() > 20) {
-                    result += 10000 + 500 * (aPerformance.getAudience() - 20);
-                }
-                result += 300 * aPerformance.getAudience();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown type: " + aPerformance.getPlay().getType());
-        }
-        return result;
     }
 }

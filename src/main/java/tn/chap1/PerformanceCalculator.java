@@ -13,6 +13,28 @@ public class PerformanceCalculator {
         this.play = aPlay;
     }
 
+    double amountFor() {
+        double result;
+        switch (this.play.getType()) {
+            case "tragedy":
+                result = 40000;
+                if (this.performance.getAudience() > 30) {
+                    result += 1000 * (this.performance.getAudience() - 30);
+                }
+                break;
+            case "comedy":
+                result = 30000;
+                if (this.performance.getAudience() > 20) {
+                    result += 10000 + 500 * (this.performance.getAudience() - 20);
+                }
+                result += 300 * this.performance.getAudience();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown type: " + this.play.getType());
+        }
+        return result;
+    }
+
     public Performance getPerformance() {
         return performance;
     }

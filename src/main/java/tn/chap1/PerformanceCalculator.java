@@ -13,7 +13,7 @@ public class PerformanceCalculator {
         this.play = aPlay;
     }
 
-    double amountFor() {
+    double amount() {
         double result;
         switch (this.play.getType()) {
             case "tragedy":
@@ -31,6 +31,18 @@ public class PerformanceCalculator {
                 break;
             default:
                 throw new IllegalArgumentException("Unknown type: " + this.play.getType());
+        }
+        return result;
+    }
+
+    int volumeCredits() {
+        int result = 0;
+        // add volume credits
+        result += Math.max(this.performance.getAudience() - 30, 0);
+
+        // add extra credit for every ten comedy attendees
+        if ("comedy".equals(this.performance.getPlay().getType())) {
+            result += Math.floorDiv(this.performance.getAudience(), 5);
         }
         return result;
     }

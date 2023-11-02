@@ -22,10 +22,11 @@ public class Statement {
     private Performance enrichPerformance(Performance aPerformance, Map<String, Play> plays) {
         PerformanceCalculator calculator= new PerformanceCalculator(aPerformance, playFor(plays, aPerformance));
         Performance result = new Performance();
-        result.setPlay(calculator.getPlay());
         result.setAudience(aPerformance.getAudience());
-        result.setAmount(calculator.amountFor());
-        result.setVolumeCredits(volumeCreditsFor(result));
+
+        result.setPlay(calculator.getPlay());
+        result.setAmount(calculator.amount());
+        result.setVolumeCredits(calculator.volumeCredits());
         return result;
     }
 
@@ -48,18 +49,6 @@ public class Statement {
     static String usd(double aNumber) {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
         return format.format(aNumber / 100);
-    }
-
-    private static int volumeCreditsFor(Performance perf) {
-        int result = 0;
-        // add volume credits
-        result += Math.max(perf.getAudience() - 30, 0);
-
-        // add extra credit for every ten comedy attendees
-        if ("comedy".equals(perf.getPlay().getType())) {
-            result += Math.floorDiv(perf.getAudience(), 5);
-        }
-        return result;
     }
 
     private static Play playFor(Map<String, Play> plays, Performance perf) {

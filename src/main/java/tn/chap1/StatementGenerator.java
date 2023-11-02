@@ -6,18 +6,24 @@ import java.util.Map;
 
 public class StatementGenerator {
     public String statement(Invoice invoice, Map<String, Play> plays) {
-        double totalAmount = 0;
 
         String result = "Statement for " + invoice.getCustomer() + "\n";
 
         for (Performance perf : invoice.getPerformances()) {
             // print line for this order
             result += " " + playFor(plays, perf).getName() + ": " + usd(amountFor(perf, playFor(plays, perf))) + " (" + perf.getAudience() + " seats)\n";
-            totalAmount += amountFor(perf, playFor(plays, perf));
         }
 
-        result += "Amount owed is " + usd(totalAmount) + "\n";
+        result += "Amount owed is " + usd(totalAmount(invoice, plays)) + "\n";
         result += "You earned " + totalVolumeCredits(invoice, plays) + " credits\n";
+        return result;
+    }
+
+    private static double totalAmount(Invoice invoice, Map<String, Play> plays) {
+        double result = 0;
+        for (Performance perf : invoice.getPerformances()) {
+            result += amountFor(perf, playFor(plays, perf));
+        }
         return result;
     }
 

@@ -20,14 +20,25 @@ public class Statement {
     }
 
     private Performance enrichPerformance(Performance aPerformance, Map<String, Play> plays) {
-        PerformanceCalculator calculator= new PerformanceCalculator(aPerformance, playFor(plays, aPerformance));
+        PerformanceCalculator calculator= createPerformanceCalculator(aPerformance, playFor(plays, aPerformance));
         Performance result = new Performance();
         result.setAudience(aPerformance.getAudience());
 
         result.setPlay(calculator.getPlay());
-        result.setAmount(calculator.amount());
+        result.setAmount(calculator.getAmount());
         result.setVolumeCredits(calculator.volumeCredits());
         return result;
+    }
+
+    private static PerformanceCalculator createPerformanceCalculator(Performance aPerformance, Play play) {
+        switch (play.getType()) {
+            case "tragedy":
+                return new TragedyCalculator(aPerformance, play);
+            case "comedy":
+                return new ComedyCalculator(aPerformance, play);
+            default:
+                throw new IllegalArgumentException("Unknown type: "+play.getType());
+        }
     }
 
     private static double totalAmount(Map<String, Object> data) {

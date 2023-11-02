@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tn.chap1.Invoice;
 import tn.chap1.Play;
-import tn.chap1.StatementGenerator;
+import tn.chap1.CreateStatementData;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class StatementGeneratorTest {
 
-    StatementGenerator statementGenerator;
+    CreateStatementData statementGenerator;
 
     @BeforeEach
     void setUp() {
-        statementGenerator = new StatementGenerator();
+        statementGenerator = new CreateStatementData();
     }
 
     String play = "{\n" +

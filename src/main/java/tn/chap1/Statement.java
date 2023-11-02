@@ -7,12 +7,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StatementGenerator {
-    public String statement(Invoice invoice, Map<String, Play> plays) {
-        return renderPlainText(createStatementData(invoice, plays));
-    }
-
-    private Map<String, Object> createStatementData(Invoice invoice, Map<String, Play> plays) {
+public class Statement {
+    Map<String, Object> createStatementData(Invoice invoice, Map<String, Play> plays) {
         Map<String, Object> statementData = new HashMap<>();
         statementData.put("customer", invoice.getCustomer());
         statementData.put("performances", invoice.getPerformances().stream()
@@ -32,20 +28,6 @@ public class StatementGenerator {
         return result;
     }
 
-
-    private static String renderPlainText(Map<String, Object> data) {
-        String result = "Statement for " + data.get("customer") + "\n";
-
-        for (Performance perf : (List<Performance>) data.get("performances")) {
-            // print line for this order
-            result += " " + perf.getPlay().getName() + ": " + usd(perf.getAmount()) + " (" + perf.getAudience() + " seats)\n";
-        }
-
-        result += "Amount owed is " + usd((Double) data.get("totalAmount")) + "\n";
-        result += "You earned " + data.get("totalVolumeCredits") + " credits\n";
-        return result;
-    }
-
     private static double totalAmount(Map<String, Object> data) {
         double result = 0;
         for (Performance perf : (List<Performance>) data.get("performances")) {
@@ -62,7 +44,7 @@ public class StatementGenerator {
         return volumeCredits;
     }
 
-    private static String usd(double aNumber) {
+    static String usd(double aNumber) {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
         return format.format(aNumber / 100);
     }

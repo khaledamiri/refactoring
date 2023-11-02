@@ -19,10 +19,11 @@ public class Statement {
         return statementData;
     }
 
-    private Performance enrichPerformance(Performance performance, Map<String, Play> plays) {
+    private Performance enrichPerformance(Performance aPerformance, Map<String, Play> plays) {
+        PerformanceCalculator calculator= new PerformanceCalculator(aPerformance, playFor(plays, aPerformance));
         Performance result = new Performance();
-        result.setPlay(playFor(plays, performance));
-        result.setAudience(performance.getAudience());
+        result.setPlay(calculator.getPlay());
+        result.setAudience(aPerformance.getAudience());
         result.setAmount(amountFor(result));
         result.setVolumeCredits(volumeCreditsFor(result));
         return result;

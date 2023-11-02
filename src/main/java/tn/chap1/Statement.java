@@ -19,13 +19,26 @@ public class Statement {
         return statementData;
     }
 
-    private Performance enrichPerformance(Performance performance, Map<String, Play> plays) {
+    private Performance enrichPerformance(Performance aPerformance, Map<String, Play> plays) {
+        PerformanceCalculator calculator= createPerformanceCalculator(aPerformance, playFor(plays, aPerformance));
         Performance result = new Performance();
-        result.setPlay(playFor(plays, performance));
-        result.setAudience(performance.getAudience());
-        result.setAmount(amountFor(result));
-        result.setVolumeCredits(volumeCreditsFor(result));
+        result.setAudience(aPerformance.getAudience());
+
+        result.setPlay(calculator.getPlay());
+        result.setAmount(calculator.getAmount());
+        result.setVolumeCredits(calculator.volumeCredits());
         return result;
+    }
+
+    private static PerformanceCalculator createPerformanceCalculator(Performance aPerformance, Play play) {
+        switch (play.getType()) {
+            case "tragedy":
+                return new TragedyCalculator(aPerformance, play);
+            case "comedy":
+                return new ComedyCalculator(aPerformance, play);
+            default:
+                throw new IllegalArgumentException("Unknown type: "+play.getType());
+        }
     }
 
     private static double totalAmount(Map<String, Object> data) {
@@ -49,41 +62,7 @@ public class Statement {
         return format.format(aNumber / 100);
     }
 
-    private static int volumeCreditsFor(Performance perf) {
-        int result = 0;
-        // add volume credits
-        result += Math.max(perf.getAudience() - 30, 0);
-
-        // add extra credit for every ten comedy attendees
-        if ("comedy".equals(perf.getPlay().getType())) {
-            result += Math.floorDiv(perf.getAudience(), 5);
-        }
-        return result;
-    }
-
     private static Play playFor(Map<String, Play> plays, Performance perf) {
         return plays.get(perf.getPlayID());
-    }
-
-    private static double amountFor(Performance aPerformance) {
-        double result;
-        switch (aPerformance.getPlay().getType()) {
-            case "tragedy":
-                result = 40000;
-                if (aPerformance.getAudience() > 30) {
-                    result += 1000 * (aPerformance.getAudience() - 30);
-                }
-                break;
-            case "comedy":
-                result = 30000;
-                if (aPerformance.getAudience() > 20) {
-                    result += 10000 + 500 * (aPerformance.getAudience() - 20);
-                }
-                result += 300 * aPerformance.getAudience();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown type: " + aPerformance.getPlay().getType());
-        }
-        return result;
     }
 }

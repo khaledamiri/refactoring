@@ -1,47 +1,63 @@
 package tn.chap1;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StatementGenerator {
     public String statement(Invoice invoice, Map<String, Play> plays) {
+        return renderPlainText(createStatementData(invoice, plays));
+    }
+
+    private Map<String, Object> createStatementData(Invoice invoice, Map<String, Play> plays) {
         Map<String, Object> statementData = new HashMap<>();
-        statementData.put("customer",invoice.getCustomer());
-        List<Performance> performances = invoice.getPerformances();
-        statementData.put("performances", enrichPerformances(performances));
-        return renderPlainText(statementData, invoice, plays);
+        statementData.put("customer", invoice.getCustomer());
+        statementData.put("performances", invoice.getPerformances().stream()
+                .map(performance -> enrichPerformance(performance, plays))
+                .collect(Collectors.toList()));
+        statementData.put("totalAmount", totalAmount(statementData));
+        statementData.put("totalVolumeCredits", totalVolumeCredits(statementData));
+        return statementData;
     }
 
-    private static List<Performance> enrichPerformances(List<Performance> performances) {
-        return new ArrayList<>(performances);
+    private Performance enrichPerformance(Performance performance, Map<String, Play> plays) {
+        Performance result = new Performance();
+        result.setPlay(playFor(plays, performance));
+        result.setAudience(performance.getAudience());
+        result.setAmount(amountFor(result));
+        result.setVolumeCredits(volumeCreditsFor(result));
+        return result;
     }
 
 
-    private static String renderPlainText(Map<String, Object> data, Invoice invoice, Map<String, Play> plays) {
-        String result = "Statement for " + data.get("customer")+ "\n";
+    private static String renderPlainText(Map<String, Object> data) {
+        String result = "Statement for " + data.get("customer") + "\n";
 
         for (Performance perf : (List<Performance>) data.get("performances")) {
             // print line for this order
-            result += " " + playFor(plays, perf).getName() + ": " + usd(amountFor(perf, playFor(plays, perf))) + " (" + perf.getAudience() + " seats)\n";
+            result += " " + perf.getPlay().getName() + ": " + usd(perf.getAmount()) + " (" + perf.getAudience() + " seats)\n";
         }
 
-        result += "Amount owed is " + usd(totalAmount(data, invoice, plays)) + "\n";
-        result += "You earned " + totalVolumeCredits(data, invoice, plays) + " credits\n";
+        result += "Amount owed is " + usd((Double) data.get("totalAmount")) + "\n";
+        result += "You earned " + data.get("totalVolumeCredits") + " credits\n";
         return result;
     }
 
-    private static double totalAmount(Map<String, Object> data,Invoice invoice, Map<String, Play> plays) {
+    private static double totalAmount(Map<String, Object> data) {
         double result = 0;
         for (Performance perf : (List<Performance>) data.get("performances")) {
-            result += amountFor(perf, playFor(plays, perf));
+            result += perf.getAmount();
         }
         return result;
     }
 
-    private static int totalVolumeCredits(Map<String, Object> data,Invoice invoice, Map<String, Play> plays) {
+    private static int totalVolumeCredits(Map<String, Object> data) {
         int volumeCredits = 0;
         for (Performance perf : (List<Performance>) data.get("performances")) {
-            volumeCredits += volumeCreditsFor(plays, perf);
+            volumeCredits += perf.getVolumeCredits();
         }
         return volumeCredits;
     }
@@ -51,13 +67,13 @@ public class StatementGenerator {
         return format.format(aNumber / 100);
     }
 
-    private static int volumeCreditsFor(Map<String, Play> plays, Performance perf) {
+    private static int volumeCreditsFor(Performance perf) {
         int result = 0;
         // add volume credits
         result += Math.max(perf.getAudience() - 30, 0);
 
         // add extra credit for every ten comedy attendees
-        if ("comedy".equals(playFor(plays, perf).getType())) {
+        if ("comedy".equals(perf.getPlay().getType())) {
             result += Math.floorDiv(perf.getAudience(), 5);
         }
         return result;
@@ -67,9 +83,9 @@ public class StatementGenerator {
         return plays.get(perf.getPlayID());
     }
 
-    private static double amountFor(Performance aPerformance, Play play) {
+    private static double amountFor(Performance aPerformance) {
         double result;
-        switch (play.getType()) {
+        switch (aPerformance.getPlay().getType()) {
             case "tragedy":
                 result = 40000;
                 if (aPerformance.getAudience() > 30) {
@@ -84,7 +100,7 @@ public class StatementGenerator {
                 result += 300 * aPerformance.getAudience();
                 break;
             default:
-                throw new IllegalArgumentException("Unknown type: " + play.getType());
+                throw new IllegalArgumentException("Unknown type: " + aPerformance.getPlay().getType());
         }
         return result;
     }
